@@ -11,8 +11,8 @@ export default defineConfig({
   name: "Test_Content_Studio",
   title: "Test_Content_Studio",
 
-  projectId: "iwqm487i",
-  dataset: "production",
+  projectId,
+  dataset,
 
   plugins: [deskTool(), visionTool()],
 
