@@ -1,9 +1,9 @@
 import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "@next/font/google";
-import styles from "@/styles/Home.module.css";
+import styles from "../styles/Home.module.css";
 // import { urlFor } from "@/lib/sanity.image";
-import { client } from "@/lib/sanity.client";
+import { client } from "../lib/sanity.client";
 import { useNextSanityImage } from "next-sanity-image";
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
@@ -90,7 +90,7 @@ export default function Home({ posts }) {
           <div>
             <div>¯\_(ツ)_/¯</div>
             <p>
-              Your data will show up here when you have configured everything
+              Your data will show up here when youve configured everything
               correctly
             </p>
           </div>
