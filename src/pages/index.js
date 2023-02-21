@@ -2,14 +2,62 @@ import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "@next/font/google";
 import styles from "@/styles/Home.module.css";
-import { createClient } from "next-sanity";
+// import { urlFor } from "@/lib/sanity.image";
+import { client } from "@/lib/sanity.client";
+import { useNextSanityImage } from "next-sanity-image";
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET;
 const apiVersion = process.env.NEXT_PUBLIC_SANITY_APIVERSION;
 const inter = Inter({ subsets: ["latin"] });
+import { PortableText } from "@portabletext/react";
 
-export default function Home({ pets }) {
+// const sanityConfig = sanityClient({
+//   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+//   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
+//   useCdn: true
+// });
+
+const SanityImage = ({ asset }) => {
+  const imageProps = useNextSanityImage(client, asset);
+
+  if (!imageProps) return null;
+
+  return (
+    <Image
+      {...imageProps}
+      // layout="responsive"
+      sizes="(max-width: 800px) 100vw, 800px"
+    />
+  );
+};
+
+const myPortableTextComponents = {
+  types: {
+    image: ({ value }) => <SanityImage {...value} />,
+    callToAction: ({ value, isInline }) =>
+      isInline ? (
+        <a href={value.url}>{value.text}</a>
+      ) : (
+        <div className="callToAction">{value.text}</div>
+      ),
+  },
+
+  marks: {
+    link: ({ children, value }) => {
+      const rel = !value.href.startsWith("/")
+        ? "noreferrer noopener"
+        : undefined;
+      return (
+        <a href={value.href} rel={rel}>
+          {children}
+        </a>
+      );
+    },
+  },
+};
+
+export default function Home({ posts }) {
   return (
     <>
       <Head>
@@ -19,20 +67,26 @@ export default function Home({ pets }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        {pets.length > 0 && (
+        {posts.length > 0 && (
           <ul>
-            {pets.map((pet) => (
-              <li key={pet._id}>{pet?.title}</li>
+            {posts.map((post) => (
+              <>
+                <li key={post._id}>{post?.title}</li>
+                <PortableText
+                  value={post.body}
+                  components={myPortableTextComponents}
+                />
+              </>
             ))}
           </ul>
         )}
-        {!pets.length > 0 && <p>No pets to show</p>}
-        {pets.length > 0 && (
+        {!posts.length > 0 && <p>No posts to show</p>}
+        {posts.length > 0 && (
           <div>
-            <pre>{JSON.stringify(pets, null, 2)}</pre>
+            <pre>{JSON.stringify(posts, null, 2)}</pre>
           </div>
         )}
-        {!pets.length > 0 && (
+        {!posts.length > 0 && (
           <div>
             <div>¯\_(ツ)_/¯</div>
             <p>
@@ -46,14 +100,13 @@ export default function Home({ pets }) {
   );
 }
 
-const client = createClient({ projectId, dataset, apiVersion });
-
 export async function getStaticProps() {
-  const pets = await client.fetch(`*[_type == "post"]`);
+  const posts = await client.fetch(`*[_type == "post"]`);
 
+  console.log("posts", posts[0]);
   return {
     props: {
-      pets,
+      posts,
     },
   };
 }
