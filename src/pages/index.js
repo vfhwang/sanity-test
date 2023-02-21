@@ -49,7 +49,7 @@ export default function Home({ pets }) {
 const client = createClient({ projectId, dataset, apiVersion });
 
 export async function getStaticProps() {
-  const pets = await client.fetch(`*[_type == "pet"]`);
+  const pets = await client.fetch(`*[_type == "post"]`);
 
   return {
     props: {
