@@ -93,6 +93,6 @@ export const getStaticPaths = async () => {
   //   console.log(routes);
   return {
     paths: routes || [],
-    fallback: false,
+    fallback: "blocking",
   };
 };
